@@ -1,5 +1,4 @@
---Discovers tests in an addon's test directory. 
---Should be run after GUnit has completely loaded through GUnit.Discover()
+--Code for discovering tests in an addon's test directory.
 
 local function getWorkingDirectory()
   -- From https://stackoverflow.com/questions/6380820/get-containing-path-of-lua-file
@@ -20,13 +19,13 @@ end
 
 local function includeTests(workingDirectory, currentDirectory)
   currentDirectory = currentDirectory or workingDirectory
-  local specPath = currentDirectory .. "*spec.lua"
+  local specPath = currentDirectory .. "*test.lua"
   local files, _ = file.Find(specPath, "MOD")
   local _, directories = file.Find(currentDirectory .. "*", "MOD")
   
   for index, file in ipairs(files) do
-    local relativePath = removeWorkingDirectoryFromPath(workingDirectory, currentDirectory)
-    include(relativePath .. file)
+    local filePath = "../" .. currentDirectory .. "/" .. file
+    include(filePath)
   end
   
   for index, directory in ipairs(directories) do
@@ -37,8 +36,7 @@ end
 local function clearTests(projectName)
   if (GUnit.Tests[projectName]) then
     GUnit.Tests[projectName] = nil
-    print("Cleared " .. projectName)
-    PrintTable(GUnit.Tests)
+    print("GUnit: Reloading tests in " .. projectName .. ".")
   end
 end
 
@@ -47,9 +45,9 @@ end
 --to prevent double-loading if that project reloads.
 --As such, ONLY RUN THIS FUNCTION ONCE IN A PROJECT!
 function GUnit.load()
-  local workingDirectory = getWorkingDirectory()
-  local projectName = findProjectName(workingDirectory)
-  clearTests(projectName)
-  includeTests(getWorkingDirectory())
+    local workingDirectory = getWorkingDirectory()
+    local projectName = findProjectName(workingDirectory)
+    clearTests(projectName)
+    includeTests(getWorkingDirectory())
 end
   
