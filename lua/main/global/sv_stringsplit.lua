@@ -1,4 +1,4 @@
---TODO: Make working split function
+--TODO: Make split function not part of string to avoid global conflicts
 function string:split(sep)
   local sep, fields = sep or ":", {}
   local pattern = string.format("([^%s]+)", sep)
