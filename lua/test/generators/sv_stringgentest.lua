@@ -5,7 +5,7 @@ local Asserts = GUnit.Asserts
 
 strGenTest:addSpec("not break", function()
     for i=1, 100 do
-      print(StringGen.generateAlphaNum())
+      StringGen.generateAlphaNum()
     end
   end
 )

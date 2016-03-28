@@ -4,7 +4,6 @@ GUnit = {}
 GUnit.Asserts = {}
 GUnit.Colors = {}
 GUnit.Generators = {}
-GUnit.Mocks = {}
 GUnit.Tests = {}
 
 local enableTests = true
@@ -25,6 +24,7 @@ if (SERVER and enableTests) then
   include("main/testengine/sv_load.lua")
   include("main/testengine/sv_asserts.lua")
   include("main/generators/sv_stringgen.lua")
+  include("main/generators/sv_fakeplayer.lua")
   --include("main/testengine/sv_matchers.lua")
   
   include(workingDirectory .. "../test/sv_testinit.lua")

@@ -6,7 +6,7 @@ function Result:print()
   if (self.passed) then
     MsgC(Colors.green, "+ " .. self.specName .. ": PASSED\n")
   else
-    MsgC(Colors.red, "- " .. self.specName .. ": FAILED, error was: " .. self.errorMessage .. "\n")
+    MsgC(Colors.red, "- " .. self.specName .. ": *** FAILED ***\nError was: " .. self.errorMessage .. "\n")
   end
 end
 

@@ -43,7 +43,7 @@ function Test:runSpecs()
     MsgC(Colors.lightBlue, "\n" .. self.name .. " should:\n")
     
     for specName, specFunction in pairs(self.specs) do
-      MsgC(Colors.lightBlue, specName .. "\n")
+      MsgC(Colors.lightBlue, "* " .. specName .. "\n")
       --Mark when the latest spec has been run
       GUnit.timestamp = os.time()
       local passed, errorMessage = pcall(specFunction)
