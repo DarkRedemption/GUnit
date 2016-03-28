@@ -15,6 +15,20 @@ function Test:size()
   return size
 end
 
+--Sets a function to be run immediately before each spec is run.
+function Test:beforeEach(func)
+  self.beforeEachFunc = func
+end
+
+--[[
+Sets a function to be run immediately after each spec is run.
+Runs even if a spec fails, but not if beforeEach fails, 
+as afterEach is usually used to tear down the setup created by beforeEach.
+]]
+function Test:afterEach(func)
+  self.afterEachFunc = func
+end
+
 --[[
 Adds a spec to the test.
 A spec (short for specification) is a subtest that tests one specific element of your code
@@ -34,20 +48,40 @@ local function findProjectName()
   return directories[4]
 end
 
+local function runSpec(specName, beforeEachFunc, specFunction, afterEachFunc)
+  
+  local function run(func)
+     local passed, errorMessage = pcall(func)
+     return GUnit.Result:new(specName, passed, errorMessage)
+  end
+  
+  local result = run(beforeEachFunc)
+  
+  if (result.passed) then
+    result = run(specFunction)
+  end
+  
+  if (result.passed) then
+    result = run(afterEachFunc)
+  else
+    run(afterEachFunc)
+  end
+  
+  return result
+end
+
 function Test:runSpecs()
   local results = {}
   
   if self:size() == 0 then
     defaultTest(self.name)
   else
-    MsgC(Colors.lightBlue, "\n" .. self.name .. " should:\n")
-    
+    MsgC(Colors.lightBlue, "\n" .. self.name .. " should:\n") 
     for specName, specFunction in pairs(self.specs) do
       MsgC(Colors.lightBlue, "* " .. specName .. "\n")
       --Mark when the latest spec has been run
       GUnit.timestamp = os.time()
-      local passed, errorMessage = pcall(specFunction)
-      results[specName] = GUnit.Result:new(specName, passed, errorMessage)
+      results[specName] = runSpec(specName, self.beforeEachFunc, specFunction, self.afterEachFunc)
     end
   end
   
@@ -79,6 +113,8 @@ function Test:new(name)
   self.__index = self
   newTest.name = name
   newTest.specs = {}
+  newTest.beforeEachFunc = function() end
+  newTest.afterEachFunc = function() end
   newTest.projectName = findProjectName()
   addProjectNameToTable(newTest)
   addTestToTable(newTest)
