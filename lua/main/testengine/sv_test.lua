@@ -55,7 +55,7 @@ end
 local function runSpec(specName, beforeEachFunc, specFunction, afterEachFunc)
   
   local function run(func)
-     local passed, errorMessage = pcall(func)
+     local passed, errorMessage = xpcall(func, debug.traceback)
      return GUnit.Result:new(specName, passed, errorMessage)
   end
   
