@@ -15,7 +15,10 @@ function Test:size()
   return size
 end
 
---Sets a function to be run immediately before each spec is run.
+--[[
+Sets a function to be run immediately before each spec is run.
+PARAM func: => Nil - The function to run before a spec.
+]]
 function Test:beforeEach(func)
   self.beforeEachFunc = func
 end
@@ -24,6 +27,7 @@ end
 Sets a function to be run immediately after each spec is run.
 Runs even if a spec fails, but not if beforeEach fails, 
 as afterEach is usually used to tear down the setup created by beforeEach.
+PARAM func: => Nil - The function to run after a spec.
 ]]
 function Test:afterEach(func)
   self.afterEachFunc = func
@@ -34,13 +38,13 @@ Adds a spec to the test.
 A spec (short for specification) is a subtest that tests one specific element of your code
 that is related to the overall test. Usually, it is used to test a single behavior of a class.
 PARAM specName:String - The name of the spec.
-PARAM specFunction:Nil => Nil -  The spec function to run.
+PARAM specFunction: => Nil -  The spec function to run.
 ]]
 function Test:addSpec(specName, specFunction)
   self.specs[specName] = specFunction
 end
 
--- Finds the name of the addon directory.
+--Finds the name of the addon directory.
 local function findProjectName()
   local workingDirectory = debug.getinfo(3, "S").source:sub(2)
   local path = workingDirectory:match("(.*/)")
@@ -76,12 +80,12 @@ function Test:runSpecs()
   if self:size() == 0 then
     defaultTest(self.name)
   else
-    MsgC(Colors.lightBlue, "\n" .. self.name .. " should:\n") 
+    MsgC(Colors.white, self.name .. " should:\n") 
     for specName, specFunction in pairs(self.specs) do
-      MsgC(Colors.lightBlue, "* " .. specName .. "\n")
       --Mark when the latest spec has been run
       GUnit.timestamp = os.time()
       results[specName] = runSpec(specName, self.beforeEachFunc, specFunction, self.afterEachFunc)
+      results[specName]:print()
     end
   end
   
@@ -105,8 +109,10 @@ local function addTestToTable(test)
   GUnit.Tests[test.projectName][test.name] = test
 end
 
---Creates a test and instantly adds it to GUnit's list of tests to run.
---PARAM name:String - The name of the test.
+--[[
+Creates a test and instantly adds it to GUnit's list of tests to run.
+PARAM name:String - The name of the test.
+]]
 function Test:new(name)
   local newTest = {}
   setmetatable(newTest, self)

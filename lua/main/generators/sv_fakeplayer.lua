@@ -3,6 +3,7 @@
 --Features to be added as requested/personally needed.
 
 local fakePlayer = {}
+fakePlayer.__index = fakePlayer
 
 --[[
 Generates a table containing the SteamID along with all of its components as separate values.
@@ -20,9 +21,10 @@ end
 
 function fakePlayer:SteamID()
   local universe = self.steamIdInfo.universe
-  local smallestBit = steamIdInfo.accountId % 2
-  local highestBits = bit.rshift(steamIdInfo.accountId, 1)
-  return "STEAM_" .. universe .. ":" .. smallestBit .. ":" .. highestBits
+  local smallestBit = self.steamIdInfo.accountId % 2
+  local highestBits = bit.rshift(self.steamIdInfo.accountId, 1)
+  local steamId = "STEAM_" .. universe .. ":" .. smallestBit .. ":" .. highestBits
+  return steamId
 end
 
 function fakePlayer:SteamID64()

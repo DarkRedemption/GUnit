@@ -6,4 +6,12 @@ local function generateTest()
   end
 end
 
+local function steamIdTest()
+  for i = 1, 100 do
+   local ply = GUnit.Generators.FakePlayer:new()
+   assert(ply:SteamID(), "SteamID was nil.")
+  end
+end
+
 playerMockTest:addSpec("not break on creation", generateTest)
+playerMockTest:addSpec("have non-nil SteamIDs", steamIdTest)

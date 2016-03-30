@@ -4,7 +4,7 @@ local Result = {}
 
 function Result:print()
   if (self.passed) then
-    MsgC(Colors.green, "+ " .. self.specName .. ": PASSED\n")
+    MsgC(Colors.green, "+ " .. self.specName .. "\n")
   else
     MsgC(Colors.red, "- " .. self.specName .. ": *** FAILED ***\nError was: " .. self.errorMessage .. "\n")
   end
