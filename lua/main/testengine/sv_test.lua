@@ -15,6 +15,14 @@ function Test:size()
   return size
 end
 
+function Test:beforeAll(func)
+  self.beforeAllFunc = func
+end
+
+function Test:afterAll(func)
+  self.afterAllFunc = func
+end
+
 --[[
 Sets a function to be run immediately before each spec is run.
 PARAM func: => Nil - The function to run before a spec.
@@ -52,26 +60,34 @@ local function findProjectName()
   return directories[4]
 end
 
-local function runSpec(specName, beforeEachFunc, specFunction, afterEachFunc)
+local function runTestFunc(specName, func)
+  local passed, errorMessage = xpcall(func, debug.traceback)
+  return GUnit.Result:new(specName, passed, errorMessage)
+end
+
+local function runSpec(testSuite, specName, specFunction)
+  local beforeEachResult 
+  local specResult
+  local afterEachResult 
   
-  local function run(func)
-     local passed, errorMessage = xpcall(func, debug.traceback)
-     return GUnit.Result:new(specName, passed, errorMessage)
-  end
+  beforeEachResult = runTestFunc(specName, testSuite.beforeEachFunc)
   
-  local result = run(beforeEachFunc)
-  
-  if (result.passed) then
-    result = run(specFunction)
-  end
-  
-  if (result.passed) then
-    result = run(afterEachFunc)
+  --If nothing went wrong in the beforeEachResult, run the spec and its afterEach.
+  if (beforeEachResult.passed) then
+    specResult = runTestFunc(specName, specFunction)
+    afterEachResult = runTestFunc(specName, testSuite.afterEachFunc)
   else
-    run(afterEachFunc)
+    --Something went wrong so don't run anything else.
+    return beforeEachResult
   end
-  
-  return result
+
+  if (!specResult.passed) then
+    --It broke before getting to afterEach so we only care about the spec's result.
+    return specResult
+  else 
+    --It got through the spec but that doesn't mean it got through the afterEach. Return afterEach's result.
+    return afterEachResult
+  end
 end
 
 function Test:runSpecs()
@@ -81,12 +97,12 @@ function Test:runSpecs()
     defaultTest(self.name)
   else
     MsgC(Colors.white, self.name .. " should:\n") 
-    for specName, specFunction in pairs(self.specs) do
-      --Mark when the latest spec has been run
-      GUnit.timestamp = os.time()
-      results[specName] = runSpec(specName, self.beforeEachFunc, specFunction, self.afterEachFunc)
-      results[specName]:print()
-    end
+      for specName, specFunction in pairs(self.specs) do
+        --Mark when the latest spec has been run
+        GUnit.timestamp = os.time()
+        results[specName] = runSpec(self, specName, specFunction)
+        results[specName]:print()
+      end
   end
   
   return results

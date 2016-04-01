@@ -6,7 +6,8 @@ function Result:print()
   if (self.passed) then
     MsgC(Colors.green, "+ " .. self.specName .. "\n")
   else
-    MsgC(Colors.red, "- " .. self.specName .. ": *** FAILED ***\nError was: " .. self.errorMessage .. "\n")
+    MsgC(Colors.red, "- " .. self.specName .. ": *** FAILED ***\nError was: " .. self.errorMessage)
+    print("") --Forces a newline because appending /n to the errorMessage doesn't work for whatever reason.
   end
 end
 
