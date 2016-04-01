@@ -7,8 +7,8 @@ test:beforeAll(function()
     --Make sure it got reset in case this is the second time running
     assert(allTestValue == "")
     assert(test.generatedBeforeAllValue == nil)
-    test.generatedBeforeAllValue = GUnit.Generators.StringGen.generateAlphaNum()
-    allTestValue = ""
+    allTestValue = GUnit.Generators.StringGen.generateAlphaNum()
+    test.generatedBeforeAllValue = allTestValue
   end)
 
 test:afterAll(function()
@@ -20,8 +20,8 @@ test:beforeEach(function()
     --Make sure it got reset for the second time running
     assert(eachTestValue == "")
     assert(test.generatedBeforeEachValue == nil)
-    test.generatedBeforeEachValue = GUnit.Generators.StringGen.generateAlphaNum()
-    eachTestValue = test.generatedBeforeEachValue
+    eachTestValue = GUnit.Generators.StringGen.generateAlphaNum()
+    test.generatedBeforeEachValue = eachTestValue
   end)
 
 test:afterEach(function()
@@ -30,7 +30,7 @@ test:afterEach(function()
   end)
 
 local function beforeAfterAllTest()
-  assert(allTestValue == test.generatedBeforeEachValue)
+  assert(allTestValue == test.generatedBeforeAllValue)
 end
 
 local function beforeAfterEachTest()
