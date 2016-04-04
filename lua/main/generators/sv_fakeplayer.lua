@@ -1,9 +1,54 @@
---Creates a fake player class. Generally for database testing purposes.
---Currently only makes fake SteamIds since that's the way you tend to look them up in a database.
---Features to be added as requested/personally needed.
+--[[
+Creates a fake player class. Generally for database testing purposes.
+Currently only makes fake SteamIds since that's the way you tend to look them up in a database,
+as well as generating player roles for TTT.
+Features and configurations to be added as requested/personally needed.
+]]
 
 local fakePlayer = {}
 fakePlayer.__index = fakePlayer
+
+function fakePlayer:GetClass()
+  return "player"
+end
+
+function fakePlayer:GetName()
+  return self.name
+end
+
+function fakePlayer:SetName(name)
+  self.name = name
+end
+
+--[[
+Returns the player's role as an integer ID.
+GetRole() is only found in the Player class in TTT to my knowledge.
+]]
+function fakePlayer:GetRole()
+  return self.role
+end
+
+function fakePlayer:SetRole(roleInt)
+  self.role = roleInt
+end
+
+function fakePlayer:GetNWBool(boolName, default)
+  return self.nwBools[boolName] or default
+end
+
+function fakePlayer:SetNWBool(boolName, value)
+  GUnit.assert(value):isType("boolean")
+  self.nwBools[boolName] = value
+end
+
+function fakePlayer:GetActiveWeapon()
+  return self.activeWeapon
+end
+
+
+function fakePlayer:SetActiveWeapon(wep)
+  self.activeWeapon = wep
+end
 
 --[[
 Generates a table containing the SteamID along with all of its components as separate values.
@@ -34,7 +79,11 @@ end
 function fakePlayer:new()
   local newFakePlayer = {}
   setmetatable(newFakePlayer, self)
+  newFakePlayer.role = math.random(0, 2)
   newFakePlayer.steamIdInfo = generateSteamIdInfo()
+  newFakePlayer.name = GUnit.Generators.StringGen.generateAlphaNum()
+  newFakePlayer.nwBools = {}
+  newFakePlayer.activeWeapon = GUnit.Generators.FakeEntity:new()
   return newFakePlayer
 end
 

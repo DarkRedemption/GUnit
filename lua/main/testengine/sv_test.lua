@@ -15,16 +15,28 @@ function Test:size()
   return size
 end
 
+--[[
+Sets a function to be run immediately before the entire test suite is run.
+If it fails, the entire test suite run is aborted.
+PARAM func: => Nil - The function to run before every spec.
+]]
 function Test:beforeAll(func)
   self.beforeAllFunc = func
 end
 
+--[[
+Sets a function to be run immediately before the entire test suite is run.
+Always runs as long as beforeAll completed successfully (or doesn't exist.)
+If it fails, nothing special happens except for it printing out the error.
+PARAM func: => Nil - The function to run before every spec.
+]]
 function Test:afterAll(func)
   self.afterAllFunc = func
 end
 
 --[[
 Sets a function to be run immediately before each spec is run.
+If it fails, the run of the spec and afterEach is aborted, which will probably abort the entire test suite.
 PARAM func: => Nil - The function to run before a spec.
 ]]
 function Test:beforeEach(func)
@@ -63,19 +75,18 @@ end
 local function runBeforeAll(test)
   local passed, errorMessage = xpcall(test.beforeAllFunc, debug.traceback)
   if (!passed) then
-    MsgC(Colors.red, "- " .. test.name .. " AfterAll: *** FAILED ***\nError was: " .. errorMessage)
+    MsgC(Colors.red, "- " .. test.name .. ": *** ABORTED - BEFOREALL FAILED ***\nError was: " .. errorMessage)
     print("") --Forces a newline because appending /n to the errorMessage doesn't work for whatever reason.
   end
-  return passed, errorMessage
+  return passed
 end
 
 local function runAfterAll(test)
   local passed, errorMessage = xpcall(test.afterAllFunc, debug.traceback)
   if (!passed) then
-    MsgC(Colors.red, "- " .. test.name .. ": *** ABORTED - BEFORE EACH FAILED ***\nError was: " .. errorMessage)
+    MsgC(Colors.red, "- " .. test.name .. " AfterAll: *** FAILED ***\nError was: " .. errorMessage)
     print("") --Forces a newline because appending /n to the errorMessage doesn't work for whatever reason.
   end
-  return passed
 end
 
 local function runTestFunc(specName, func)

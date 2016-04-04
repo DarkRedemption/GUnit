@@ -5,6 +5,8 @@ local function updateResultStats(results, resultStats)
     resultStats.specs = resultStats.specs + 1
     if (result.passed) then
       resultStats.passed = resultStats.passed + 1
+    elseif (result:isPending()) then
+      resultStats.pending = resultStats.pending + 1
     else
       resultStats.failed = resultStats.failed + 1
     end
@@ -15,16 +17,19 @@ local function printResultStats(resultStats)
   if (!resultStats) then return end
   
   local color = nil
+  
   if (resultStats.failed == 0) then
     color = Colors.green
   else
     color = Colors.red
   end
+  
   local elapsedTime = string.format("Run completed in %.3f seconds.\n", os.clock() - resultStats.startTime)
+  
   local msg = elapsedTime ..
               resultStats.specs .. " specs run in " .. resultStats.projects .. " project(s). " ..
-              resultStats.passed .. " passed, " .. resultStats.failed .. " failed.\n"
-  MsgC(color,  msg) 
+              resultStats.passed .. " passed, " .. resultStats.failed .. " failed, " .. resultStats.pending .. " pending.\n"
+  MsgC(color,  msg)
 end
 
 local function printResults(results)
@@ -100,6 +105,7 @@ local function runTests(projectName, testName)
   resultStats.specs = 0
   resultStats.passed = 0
   resultStats.failed = 0
+  resultStats.pending = 0
   
   if (projectName == nil) then
     testsRan = runAllTests(resultStats)
