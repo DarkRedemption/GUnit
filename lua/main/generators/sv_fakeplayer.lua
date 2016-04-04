@@ -1,9 +1,25 @@
---Creates a fake player class. Generally for database testing purposes.
---Currently only makes fake SteamIds since that's the way you tend to look them up in a database.
---Features to be added as requested/personally needed.
+--[[
+Creates a fake player class. Generally for database testing purposes.
+Currently only makes fake SteamIds since that's the way you tend to look them up in a database,
+as well as generating player roles for TTT.
+Features and configurations to be added as requested/personally needed.
+]]
 
 local fakePlayer = {}
 fakePlayer.__index = fakePlayer
+
+function fakePlayer:GetClass()
+  return "player"
+end
+
+--[[
+Returns the player's role as an integer ID.
+Currently configured to be compatible with TTT only,
+as the role ID that is automatically generated is between 0 and 2.
+]]
+function fakePlayer:GetRole()
+  return self.role
+end
 
 --[[
 Generates a table containing the SteamID along with all of its components as separate values.
@@ -34,6 +50,7 @@ end
 function fakePlayer:new()
   local newFakePlayer = {}
   setmetatable(newFakePlayer, self)
+  newFakePlayer.role = math.random(0, 2)
   newFakePlayer.steamIdInfo = generateSteamIdInfo()
   return newFakePlayer
 end
