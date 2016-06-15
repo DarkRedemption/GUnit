@@ -1,5 +1,4 @@
 local Test = {}
-
 local Colors = GUnit.Colors
 
 local function defaultTest(testName)
@@ -62,6 +61,7 @@ PARAM specFunction: => Nil -  The spec function to run.
 ]]
 function Test:addSpec(specName, specFunction)
   self.specs[specName] = specFunction
+  table.insert(self.indexedSpecs, specName)
 end
 
 --Finds the name of the addon directory.
@@ -127,10 +127,10 @@ function Test:runSpecs()
   else
     MsgC(Colors.white, self.name .. " should:\n")
     if (runBeforeAll(self)) then
-      for specName, specFunction in pairs(self.specs) do
+      for index, specName in pairs(self.indexedSpecs) do
         --Mark when the latest spec has been run
         GUnit.timestamp = os.time()
-        results[specName] = runSpec(self, specName, specFunction)
+        results[specName] = runSpec(self, specName, self.specs[specName])
         results[specName]:print()
       end
       runAfterAll(self)
@@ -167,6 +167,7 @@ function Test:new(name)
   self.__index = self
   newTest.name = name
   newTest.specs = {}
+  newTest.indexedSpecs = {}
   newTest.beforeAllFunc = function() end
   newTest.afterAllFunc = function() end
   newTest.beforeEachFunc = function() end

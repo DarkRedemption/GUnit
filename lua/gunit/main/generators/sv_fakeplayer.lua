@@ -20,12 +20,20 @@ function fakePlayer:SetName(name)
   self.name = name
 end
 
+function fakePlayer:IsPlayer()
+  return true
+end
+
 --[[
 Returns the player's role as an integer ID.
 GetRole() is only found in the Player class in TTT to my knowledge.
 ]]
 function fakePlayer:GetRole()
   return self.role
+end
+
+function fakePlayer:IsTerror()
+  return self.role == 1
 end
 
 function fakePlayer:SetRole(roleInt)
@@ -64,16 +72,39 @@ local function generateSteamIdInfo()
   return steamIdInfo
 end
 
+function fakePlayer:getHighestIdBits()
+  return bit.rshift(self.steamIdInfo.accountId, 1)
+end
+
 function fakePlayer:SteamID()
   local universe = self.steamIdInfo.universe
   local smallestBit = self.steamIdInfo.accountId % 2
-  local highestBits = bit.rshift(self.steamIdInfo.accountId, 1)
+  local highestBits = self:getHighestIdBits()
   local steamId = "STEAM_" .. universe .. ":" .. smallestBit .. ":" .. highestBits
   return steamId
 end
 
 function fakePlayer:SteamID64()
   error("Not yet implemented.")
+end
+
+--Unique IDs are a transform of the SteamID in an unknown way.
+--Since it's unknown, I'm just going to add a large number to the highest bits.
+--Should be just fine for testing purposes since it's still just a large int.
+function fakePlayer:UniqueID()
+  return self:getHighestIdBits() + 15000000
+end
+
+function fakePlayer:IsUserGroup(groupName)
+  return self.userGroup == groupName
+end
+
+function fakePlayer:SetUserGroup(groupName)
+  self.userGroup = groupName
+end
+
+function fakePlayer:IsBot()
+  return self:SteamID() == "BOT"
 end
 
 function fakePlayer:new()
@@ -84,6 +115,7 @@ function fakePlayer:new()
   newFakePlayer.name = GUnit.Generators.StringGen.generateAlphaNum()
   newFakePlayer.nwBools = {}
   newFakePlayer.activeWeapon = GUnit.Generators.FakeEntity:new()
+  newFakePlayer.userGroup = "user"
   return newFakePlayer
 end
 
