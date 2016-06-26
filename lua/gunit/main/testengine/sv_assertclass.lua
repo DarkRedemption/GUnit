@@ -21,7 +21,7 @@ end
 
 function assertClass:isNil()
   checkForSelf(self)
-  assert(self.funcOrValue == nil, "Expected nil, got " .. tostring(funcOrValue) .. " of type " .. type(self.funcOrValue))
+  assert(self.funcOrValue == nil, "Expected nil, got " .. tostring(funcOrValue) .. " of type '" .. type(self.funcOrValue) .. "'")
   return self
 end
 
@@ -62,7 +62,7 @@ function assertClass:shouldEqual(otherFuncOrValue, customErrorMsg)
   --If otherFuncOrValue is not defined, 'self' might be otherFuncOrValue due to how : works
   checkForSelf(self)
   local defaultErrorMsg = tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) .. 
-    "' does not equal " .. tostring(otherFuncOrValue) .. " of type " .. type(otherFuncOrValue)
+    "' does not equal " .. tostring(otherFuncOrValue) .. " of type '" .. type(otherFuncOrValue) .. "'"
   local msg = customErrorMsg or defaultErrorMsg
   assert(self.funcOrValue == otherFuncOrValue, msg)
   return self
@@ -77,7 +77,7 @@ function assertClass:shouldNotEqual(otherFuncOrValue, customErrorMsg)
   --If otherFuncOrValue is not defined, 'self' might be otherFuncOrValue due to how : works
   checkForSelf(self)
   local defaultErrorMsg = tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) .. 
-    "' is equal to " .. tostring(otherFuncOrValue) .. " of type " .. type(otherFuncOrValue)
+    "' is equal to " .. tostring(otherFuncOrValue) .. " of type '" .. type(otherFuncOrValue) .. "'"
   local msg = customErrorMsg or defaultErrorMsg
   assert(self.funcOrValue != otherFuncOrValue, msg)
   return self
@@ -86,32 +86,32 @@ end
 function assertClass:lessThan(otherValue)
   checkForSelf(self)
   assert(self.funcOrValue < otherValue, 
-    tostring(self.funcOrValue) .. " of type " .. type(self.funcOrValue) ..
-    " was not less than " .. tostring(otherValue) .. " of type " .. type(otherValue))
+    tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) ..
+    "' was not less than " .. tostring(otherValue) .. " of type '" .. type(otherValue) .. "'")
   return self
 end
 
 function assertClass:lessThanOrEqualTo(otherValue)
   checkForSelf(self)
   assert(self.funcOrValue <= otherValue, 
-    tostring(self.funcOrValue) .. " of type " .. type(self.funcOrValue) ..
-    " was not less than or equal to" .. tostring(otherValue) .. " of type " .. type(otherValue))
+    tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) ..
+    "' was not less than or equal to" .. tostring(otherValue) .. " of type '" .. type(otherValue) .. "'")
   return self
 end
 
 function assertClass:greaterThan(otherValue)
   checkForSelf(self)
   assert(self.funcOrValue > otherValue, 
-    tostring(self.funcOrValue) .. " of type " .. type(self.funcOrValue) ..
-    " was not greater than " .. tostring(otherValue) .. " of type " .. type(otherValue))
+    tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) ..
+    "' was not greater than " .. tostring(otherValue) .. " of type '" .. type(otherValue) .. "'")
   return self
 end
 
 function assertClass:greaterThanOrEqualTo(otherValue)
   checkForSelf(self)
   assert(self.funcOrValue >= otherValue, 
-    tostring(self.funcOrValue) .. " of type " .. type(self.funcOrValue) ..
-    " was not greater than or equal to " .. tostring(otherValue) .. " of type " .. type(otherValue))
+    tostring(self.funcOrValue) .. " of type '" .. type(self.funcOrValue) ..
+    "' was not greater than or equal to " .. tostring(otherValue) .. " of type '" .. type(otherValue) .. "'")
   return self
 end
 
