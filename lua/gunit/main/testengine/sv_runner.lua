@@ -1,12 +1,24 @@
 local Colors = GUnit.Colors
 
-local function updateResultStats(results, resultStats)
+local function addFailedSuite(test, resultStats)
+  local suiteName = test.projectName .. "::" .. test.name
+  if resultStats.failedSuites[suiteName] == nil then
+    resultStats.failedSuites[suiteName] = 1
+  else
+    resultStats.failedSuites[suiteName] = resultStats.failedSuites[suiteName] + 1
+  end
+end
+
+local function updateResultStats(test, results, resultStats)
   for key, result in pairs(results) do
     resultStats.specs = resultStats.specs + 1
     if (result.passed) then
       resultStats.passed = resultStats.passed + 1
+    elseif (result:isPending()) then
+      resultStats.pending = resultStats.pending + 1
     else
       resultStats.failed = resultStats.failed + 1
+      addFailedSuite(test, resultStats)
     end
   end
 end
@@ -15,16 +27,29 @@ local function printResultStats(resultStats)
   if (!resultStats) then return end
   
   local color = nil
+  
   if (resultStats.failed == 0) then
     color = Colors.green
   else
     color = Colors.red
   end
-  local elapsedTime = string.format("Run completed in %.3f seconds.\n", os.clock() - resultStats.startTime)
+  
+  local elapsedTime = string.format("Run completed in %.3f seconds", os.clock() - resultStats.startTime) ..
+                      os.date(" at %I:%M:%S %p on %A, %B %d, %Y \n")
+                      
   local msg = elapsedTime ..
-              resultStats.specs .. " specs run in " .. resultStats.projects .. " project(s). " ..
-              resultStats.passed .. " passed, " .. resultStats.failed .. " failed.\n"
-  MsgC(color,  msg) 
+              resultStats.specs .. " spec(s) run in " .. resultStats.projects .. " project(s). " ..
+              resultStats.passed .. " passed, " .. resultStats.failed .. " failed, " .. resultStats.pending .. " pending.\n"
+              
+  if (resultStats.failed != 0) then
+    local failedSuiteMessage = "Failed Test Suites:\n"
+    for suiteName, numFailed in pairs(resultStats.failedSuites) do
+      failedSuiteMessage = failedSuiteMessage .. suiteName .. " - " .. numFailed .. " spec(s) failed.\n"
+    end
+    msg = msg .. failedSuiteMessage 
+  end
+  
+  MsgC(color, msg)
 end
 
 local function printResults(results)
@@ -35,7 +60,7 @@ end
 
 local function runTest(test, resultStats)
   local results = test:runSpecs()
-  updateResultStats(results, resultStats)
+  updateResultStats(test, results, resultStats)
 end
 
 local function runProjectTests(projectName, testTable, resultStats)
@@ -50,9 +75,9 @@ local function runAllTests(resultStats)
     MsgC(Colors.red, "No tests found in any project!\n")
     return false
   else
-    for project, testTable in pairs(GUnit.Tests) do
+    for projectName, testTable in pairs(GUnit.Tests) do
       resultStats.projects = resultStats.projects + 1
-      runProjectTests(project, testTable, resultStats)
+      runProjectTests(projectName, testTable, resultStats)
     end
     return true
   end
@@ -100,6 +125,8 @@ local function runTests(projectName, testName)
   resultStats.specs = 0
   resultStats.passed = 0
   resultStats.failed = 0
+  resultStats.pending = 0
+  resultStats.failedSuites = {}
   
   if (projectName == nil) then
     testsRan = runAllTests(resultStats)
@@ -135,7 +162,7 @@ local function addTestOnlyCommand()
       print("Usage: test-only <projectname> [testname]\nNote that testnames are case sensitive and project names are always lowercase.\n" ..
         "If your test has spaces in the name, surround it with quotes. ex: \"My Test\"")
     else
-      runTests(args[1], args[2])
+      runTests(string.lower(args[1]), args[2])
     end
   end)
 end

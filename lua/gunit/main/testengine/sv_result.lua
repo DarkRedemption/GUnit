@@ -5,10 +5,18 @@ local Result = {}
 function Result:print()
   if (self.passed) then
     MsgC(Colors.green, "+ " .. self.specName .. "\n")
+  elseif (self:isPending()) then
+    MsgC(Colors.yellow, "* " .. self.specName .. ": * PENDING *\n")
   else
     MsgC(Colors.red, "- " .. self.specName .. ": *** FAILED ***\nError was: " .. self.errorMessage)
-    print("") --Forces a newline because appending /n to the errorMessage doesn't work for whatever reason.
+    --Force a newline because appending /n to the errorMessage doesn't work for whatever reason.
+    --It's probably running out of characters it can hold.
+    print("") 
   end
+end
+
+function Result:isPending()
+  return string.match(self.errorMessage, GUnit.pendingCode) == GUnit.pendingCode
 end
 
 --[[

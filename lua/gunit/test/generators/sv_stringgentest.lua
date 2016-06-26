@@ -11,5 +11,5 @@ strGenTest:addSpec("not break", function()
 )
 
 strGenTest:addSpec("stop the user from having a min size exceed the max size", function()
-    Asserts.shouldFail(StringGen.generateAlphaNum, 10, 1)
+    GUnit.assert(StringGen.generateAlphaNum, 10, 1):shouldFail()
   end)
