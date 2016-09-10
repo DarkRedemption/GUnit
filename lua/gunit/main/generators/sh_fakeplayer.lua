@@ -24,6 +24,10 @@ function fakePlayer:IsPlayer()
   return true
 end
 
+function fakePlayer:IsValid()
+  return true
+end
+
 --[[
 Returns the player's role as an integer ID.
 GetRole() is only found in the Player class in TTT to my knowledge.

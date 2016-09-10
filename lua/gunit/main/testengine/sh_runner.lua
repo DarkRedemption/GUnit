@@ -146,11 +146,11 @@ local function addTestCommand()
     if (#args > 0) then
       print("Command 'test' does not take arguments.\nIf you wish to specify a specific project or test to run, use the 'test-only' command.")
     else
-      if (ply == NULL) then
+      if (ply == NULL || ply:GetUserGroup() == "superadmin") then
         MsgC(Colors.lightBlue, "Running tests in every project.\n")
         runTests()
-      else
-        MsgC(Colors.lightBlue, "This command may only be run through the server console.")
+      else         
+        MsgC(Colors.lightBlue, "This command may only be run through the server console or by a superadmin.")
       end
     end
   end)

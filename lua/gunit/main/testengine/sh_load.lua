@@ -65,12 +65,13 @@ local function includeTests(workingDirectory, currentDirectory)
   if (files) then
     for index, file in ipairs(files) do
       local filePath = "../" .. currentDirectory .. file
+      --AddCSLuaFile(filePath)
       include(filePath)
       --print("Including " .. filePath)
       --print("current directory is " .. currentDirectory)
     end
   else
-    --print("No testfiles found in " .. currentDirectory)
+    print("No testfiles found in " .. currentDirectory)
   end
   
   if (directories) then

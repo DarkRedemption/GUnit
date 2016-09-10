@@ -65,7 +65,7 @@ function Test:addSpec(specName, specFunction)
 end
 
 --Finds the name of the addon directory.
-local function findProjectName()
+function Test.findProjectName()
   local workingDirectory = debug.getinfo(3, "S").source:sub(2)
   local path = workingDirectory:match("(.*/)")
   local directories = path:split("/")
@@ -145,23 +145,28 @@ local function findAddonDirectories()
   return directories
 end
 
-local function addProjectNameToTable(test)
-  if (GUnit.Tests[test.projectName] == nil) then
-    GUnit.Tests[test.projectName] = {}
+local function addProjectNameToTable(testType, test)
+  --If the testType does not exist, or it does exist and it matches it being a SERVER or CLIENT
+  if (testType == nil || testType) then
+    if (GUnit.Tests[test.projectName] == nil) then
+      GUnit.Tests[test.projectName] = {}
+    end
   end
 end
 
-local function addTestToTable(test)
-  assert(GUnit.Tests[test.projectName][test.name] == nil,
-    "Testname " .. test.name .. " already exist for project " .. test.projectName) 
-  GUnit.Tests[test.projectName][test.name] = test
+local function addTestToTable(testType, test)
+  if (testType == nil || testType) then
+    assert(GUnit.Tests[test.projectName][test.name] == nil,
+      "Testname " .. test.name .. " already exist for project " .. test.projectName) 
+    GUnit.Tests[test.projectName][test.name] = test
+  end
 end
 
 --[[
 Creates a test and instantly adds it to GUnit's list of tests to run.
 PARAM name:String - The name of the test.
 ]]
-function Test:new(name)
+function Test:new(name, testType)
   local newTest = {}
   setmetatable(newTest, self)
   self.__index = self
@@ -172,9 +177,10 @@ function Test:new(name)
   newTest.afterAllFunc = function() end
   newTest.beforeEachFunc = function() end
   newTest.afterEachFunc = function() end
-  newTest.projectName = findProjectName()
-  addProjectNameToTable(newTest)
-  addTestToTable(newTest)
+  newTest.projectName = self.findProjectName()
+  newTest.testType = testType
+  addProjectNameToTable(testType, newTest)
+  addTestToTable(testType, newTest)
   return newTest
 end
 
