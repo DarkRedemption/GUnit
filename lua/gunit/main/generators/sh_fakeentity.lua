@@ -15,21 +15,25 @@ function fakeEntity:SetNWBool(boolName, value)
 end
 
 function fakeEntity:GetNWString(stringName, default)
-  print("Getting string " .. stringName)
-  print(self.nwStrings[stringName])
   return self.nwStrings[stringName] or default
 end
 
 function fakeEntity:SetNWString(stringName, value)
-  print(stringName)
-  print(value)
   GUnit.assert(value):isType("string")
-  print("setting value")
   self.nwStrings[stringName] = value
 end
 
 function fakeEntity:IsValid()
   return true
+end
+
+function fakeEntity:IsWeapon()
+  return self.isWeapon
+end
+
+function fakeEntity:SetIsWeapon(bool)
+  assert(type(bool) == "boolean")
+  self.isWeapon = bool
 end
 
 function fakeEntity:new()
@@ -38,6 +42,7 @@ function fakeEntity:new()
   newEntity.classname = GUnit.Generators.StringGen.generateAlphaNum()
   newEntity.nwBools = {}
   newEntity.nwStrings = {}
+  newEntity.isWeapon = false
   return newEntity
 end
 
