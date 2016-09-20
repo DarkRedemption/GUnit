@@ -56,19 +56,27 @@ local function findProjectName(workingDirectory)
   return directories[2]
 end
 
+local function stringEndsWith(str, ending)
+  return ending=='' or string.sub(str,-str.len(ending))==ending
+end
+
 local function includeTests(workingDirectory, currentDirectory)
   currentDirectory = currentDirectory or workingDirectory
-  local specPath = currentDirectory .. "*test.lua"
+  local specPath = currentDirectory .. "*"
   local files, _ = file.Find(specPath, "MOD")
   local _, directories = file.Find(currentDirectory .. "*", "MOD")
   
   if (files) then
     for index, file in ipairs(files) do
       local filePath = "../" .. currentDirectory .. file
+      --We have to do it this way instead of doing *.lua in specPath
+      --because Linux freaks out and can't find all the files for some reason otherwise.
+      if (stringEndsWith(filePath, "test.lua")) then
       --AddCSLuaFile(filePath)
-      include(filePath)
-      --print("Including " .. filePath)
-      --print("current directory is " .. currentDirectory)
+        include(filePath)
+        --print("Including " .. filePath)
+        --print("current directory is " .. currentDirectory)
+      end
     end
   else
     print("No testfiles found in " .. currentDirectory)
@@ -100,4 +108,3 @@ function GUnit.load()
     clearTests(projectName)
     includeTests(getWorkingDirectory())
 end
-  

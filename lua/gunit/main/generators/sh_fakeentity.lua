@@ -31,6 +31,10 @@ function fakeEntity:IsWeapon()
   return self.isWeapon
 end
 
+function fakeEntity:IsPlayer()
+  return false
+end
+
 function fakeEntity:SetIsWeapon(bool)
   assert(type(bool) == "boolean")
   self.isWeapon = bool
