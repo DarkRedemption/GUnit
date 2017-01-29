@@ -47,13 +47,13 @@ Now, create functions that test specific parts of the class or function under te
       GUnit.assert(multiplication):shouldEqual(4)
     end
 
-    test.addSpec("ensure two times two equals four", myFirstTest)
+    test:addSpec("ensure two times two equals four", myFirstTest)
 
 The use of GUnit.assert, above, is not necessary. The `assert` function that is baked into Lua may be used as well. The advantages of `GUnit.assert` are discussed under Advanced Features.
 
 The second way to add a spec function is to simply define an anonymous function inside of `addSpec()` directly:
 
-    test.addSpec("ensure two times two equals four", function()
+    test:addSpec("ensure two times two equals four", function()
         local multiplication = 2 * 2
         GUnit.assert(multiplication):shouldEqual(4)
       end
